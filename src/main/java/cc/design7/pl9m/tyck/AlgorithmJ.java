@@ -20,12 +20,13 @@ public final class AlgorithmJ {
             case ExprApp exprApp -> jExprApply(env, exprApp);
             case ExprLoop exprLoop -> jExprLoop(env, exprLoop);
             case ExprBreak exprBreak -> jExprBreak(env, exprBreak);
+            case ExprContinue _ -> new TypeVar(Greek.ETA, env.greekTimestamps());
 
             case ExprLet exprLet -> exprLet.rec()
                     ? jExprLetRec(env, exprLet)
                     : jExprLet(env, exprLet);
             case ExprAbs exprAbs -> jExprAbs(env, exprAbs);
-            case ExprReturn exprReturn -> jExprReturn(env, exprReturn);s
+            case ExprReturn exprReturn -> jExprReturn(env, exprReturn);
         };
     }
 

@@ -14,6 +14,7 @@ public sealed interface IExpr permits
         ExprStmtList,
         ExprReturn,
         ExprBreak,
+        ExprContinue,
         ExprIf,
         ExprLoop
 {
