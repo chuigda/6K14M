@@ -2,7 +2,21 @@ program ::= global-decl-list
 
 global-decl-list ::= global-decl-list global-decl | nil
 
-global-decl ::= 'let' 'rec'? 'native'? let-assign-list
+global-decl ::= let-decl
+              | native-decl
+              | type-decl
+
+let-decl ::= 'let' 'rec'? let-assign-list
+
+native-decl ::= 'let' 'native' identifier '=' string
+
+type-decl ::= 'type' identifier '=' type-definition
+
+type-definition ::= type-constructor-list | string
+
+type-constructor-list ::= type-constructor-list '|' type-constructor | type-constructor
+
+type-constructor ::= identifier identifier*
 
 let-assign-list ::= let-assign-list let-assign | nil
 
@@ -20,10 +34,11 @@ expr ::= integer
        | return-expr
        | if-expr
        | loop-expr
+       | '(' expr ')'
 
 abstraction-expr ::= ('\\' | 'lambda') (identifier+ | '()') '.' expr
 
-application-expr ::= identifier '(' expr-list ')'
+application-expr ::= identifier expr-list
 
 let-expr ::= 'let' 'rec'? let-assign-list 'in' expr
 
@@ -35,6 +50,6 @@ if-expr ::= 'if' expr 'then' expr ('else' expr)?
 
 loop-expr ::= 'loop' expr 'end'
 
-expr-list ::= expr-list ',' expr | nil
+expr-list ::= expr-list expr | nil
 
 semicolon-sep-expr-list ::= semicolon-sep-expr-list ';' expr | expr
