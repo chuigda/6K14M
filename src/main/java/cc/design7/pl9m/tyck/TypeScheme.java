@@ -2,9 +2,18 @@ package cc.design7.pl9m.tyck;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.util.HashMap;
 import java.util.List;
 
 public record TypeScheme(List<TypeVar> free, Type type) {
+    public Type instantiate(HashMap<Greek, Long> greekTimestamps) {
+        HashMap<TypeVar, TypeVar> free = new HashMap<>();
+        for (TypeVar var : this.free) {
+            free.put(var, new TypeVar(var.greek, greekTimestamps));
+        }
+        return type.instantiate(free);
+    }
+
     @Override
     public @NotNull String toString() {
         if (free.isEmpty()) {

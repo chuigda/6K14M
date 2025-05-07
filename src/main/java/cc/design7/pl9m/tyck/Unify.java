@@ -1,6 +1,10 @@
 package cc.design7.pl9m.tyck;
 
 public final class Unify {
+    /// Due to the imperative nature of the Algorithm J, this `unify` operator is not really
+    /// commutative. This function tend to resolve {@code t1} to {@code t2}
+    /// ({@code t1.resolve = t2}) when both {@code t1} and {@code t2} are unresolved
+    /// {@link TypeVar}s. Be careful with argument order.
     public static void unify(Type t1, Type t2) throws TypeCheckException {
         t1 = t1.prune();
         t2 = t2.prune();
@@ -30,7 +34,7 @@ public final class Unify {
         }
 
         if (type.containsTypeVar(typeVar)) {
-            throw new TypeCheckException("错误: 无法归一化类型变量 %s 和类型 %s：后者中存在对前者的引用，这是不允许的".formatted(type, typeVar));
+            throw new TypeCheckException("错误: 无法归一化类型变量 %s 和类型 %s：后者中存在对前者的引用，这是不允许的".formatted(typeVar, type));
         }
 
         if (type instanceof TypeVar typeVar2) {
@@ -52,7 +56,7 @@ public final class Unify {
 
     private static void unifyTypeOp(TypeOp typeOp1, TypeOp typeOp2) throws TypeCheckException {
         if (!typeOp1.op().equals(typeOp2.op())) {
-            throw new TypeCheckException("错误: 无法归一化类型算子 %s 和 %s（运算符不同）".formatted(typeOp1, typeOp1));
+            throw new TypeCheckException("错误: 无法归一化类型算子 %s 和 %s（运算符不同）".formatted(typeOp1, typeOp2));
         }
 
         if (typeOp1.args().size() != typeOp2.args().size()) {

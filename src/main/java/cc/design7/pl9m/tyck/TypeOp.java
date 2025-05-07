@@ -121,16 +121,16 @@ public record TypeOp(String op, List<Type> args) implements Type {
     public static final TypeOp STRING_TYPE = new TypeOp("string", List.of());
 
     @Contract("_ -> new")
-    public static @NotNull TypeOp productType(Type... args) {
-        if (args.length == 0) {
+    public static @NotNull TypeOp productType(List<Type> args) {
+        if (args.isEmpty()) {
             return UNIT_TYPE;
         }
 
-        return new TypeOp("*", List.of(args));
+        return new TypeOp("*", args);
     }
 
     @Contract("_ -> new")
-    public static @NotNull TypeOp functionType(Type... args) {
-        return new TypeOp("->", List.of(args));
+    public static @NotNull TypeOp functionType(List<Type> args) {
+        return new TypeOp("->", args);
     }
 }

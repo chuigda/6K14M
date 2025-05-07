@@ -7,6 +7,7 @@ import java.util.HashSet;
 import java.util.List;
 
 public record TypeEnv(
+        HashMap<Greek, Long> greekTimestamps,
         @Nullable TypeEnv parent,
         @Nullable Type returnType,
         @Nullable Type loopBreakType,
@@ -18,7 +19,14 @@ public record TypeEnv(
             @Nullable Type returnType,
             @Nullable Type loopBreakType
     ) {
-        this(parent, returnType, loopBreakType, new HashMap<>(), new HashSet<>());
+        this(
+                parent != null ? parent.greekTimestamps : new HashMap<>(),
+                parent,
+                returnType,
+                loopBreakType,
+                new HashMap<>(),
+                new HashSet<>()
+        );
     }
 
     public @Nullable TypeScheme lookup(String varName) {

@@ -7,12 +7,12 @@ import java.util.List;
 
 public record ExprAbs(
         SourceLocation location,
-        List<String> args,
+        List<String> params,
         IExpr body,
         Ref<Type> typeRef
 ) implements IExpr, ITypeResolvable {
-    public ExprAbs(SourceLocation location, List<String> args, IExpr body) {
-        this(location, args, body, new Ref<>());
+    public ExprAbs(SourceLocation location, List<String> params, IExpr body) {
+        this(location, params, body, new Ref<>());
     }
 
     @Override

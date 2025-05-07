@@ -13,6 +13,7 @@ public sealed interface IExpr permits
         ExprLet,
         ExprStmtList,
         ExprReturn,
+        ExprBreak,
         ExprIf,
         ExprLoop
 {
