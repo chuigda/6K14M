@@ -6,15 +6,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.List;
 import java.util.Map;
 
-public final class TypeOp implements Type {
-    public final String op;
-    public final List<Type> args;
-
-    public TypeOp(String op, List<Type> args) {
-        this.op = op;
-        this.args = args;
-    }
-
+public record TypeOp(String op, List<Type> args) implements Type {
     @Override
     public boolean containsTypeVar(TypeVar typeVar) {
         for (Type arg : args) {
@@ -77,7 +69,7 @@ public final class TypeOp implements Type {
     }
 
     @Override
-    public String toString() {
+    public @NotNull String toString() {
         if (args.isEmpty()) {
             if (op.equals("*")) {
                 return "()";
@@ -129,7 +121,7 @@ public final class TypeOp implements Type {
     public static final TypeOp STRING_TYPE = new TypeOp("string", List.of());
 
     @Contract("_ -> new")
-    public static @NotNull TypeOp productType(Type ...args) {
+    public static @NotNull TypeOp productType(Type... args) {
         if (args.length == 0) {
             return UNIT_TYPE;
         }
@@ -138,7 +130,7 @@ public final class TypeOp implements Type {
     }
 
     @Contract("_ -> new")
-    public static @NotNull TypeOp functionType(Type ...args) {
+    public static @NotNull TypeOp functionType(Type... args) {
         return new TypeOp("->", List.of(args));
     }
 }
