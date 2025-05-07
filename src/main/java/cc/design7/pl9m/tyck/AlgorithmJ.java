@@ -8,9 +8,9 @@ import java.util.List;
 
 public final class AlgorithmJ {
     public static Type J(TypeEnv env, IExpr expr) throws TypeCheckException {
-        Type type = jImpl(env, expr);
+        Type type = jImpl(env, expr).prune();
         if (expr instanceof ITypeResolvable typeResolvable) {
-            typeResolvable.typeRef().value = type.prune();
+            typeResolvable.typeRef().value = type;
         }
         return type;
     }
@@ -137,7 +137,8 @@ public final class AlgorithmJ {
     private static Type jExprLoop(TypeEnv env, ExprLoop exprLoop) throws TypeCheckException {
         TypeVar loopBreakType = new TypeVar(Greek.ETA, env.greekTimestamps());
         TypeEnv env1 = new TypeEnv(env, /*returnType=*/null, loopBreakType);
-        return J(env1, exprLoop.body());
+        J(env1, exprLoop.body());
+        return loopBreakType;
     }
 
     private static Type jExprReturn(TypeEnv env, ExprReturn exprReturn) throws TypeCheckException {
