@@ -1,6 +1,6 @@
 package cc.design7.pl9m.tyck;
 
-public final class J {
+public final class Unify {
     public static void unify(Type t1, Type t2) throws TypeCheckException {
         t1 = t1.prune();
         t2 = t2.prune();
