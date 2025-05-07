@@ -8,6 +8,14 @@ import java.util.List;
 
 public final class AlgorithmJ {
     public static Type J(TypeEnv env, IExpr expr) throws TypeCheckException {
+        Type type = jImpl(env, expr);
+        if (expr instanceof ITypeResolvable typeResolvable) {
+            typeResolvable.typeRef().value = type.prune();
+        }
+        return type;
+    }
+
+    private static Type jImpl(TypeEnv env, IExpr expr) throws TypeCheckException {
         return switch (expr) {
             case ExprLitBool _ -> TypeOp.BOOL_TYPE;
             case ExprLitFloat _ -> TypeOp.FLOAT_TYPE;
