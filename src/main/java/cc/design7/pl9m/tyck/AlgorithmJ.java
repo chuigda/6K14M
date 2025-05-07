@@ -9,21 +9,23 @@ import java.util.List;
 public final class AlgorithmJ {
     public static Type J(TypeEnv env, IExpr expr) throws TypeCheckException {
         return switch (expr) {
-            case ExprAbs exprAbs -> jExprAbs(env, exprAbs);
-            case ExprApp exprApp -> jExprApply(env, exprApp);
-            case ExprIf exprIf -> jExprIf(env, exprIf);
-            case ExprLet exprLet -> exprLet.rec()
-                    ? jExprLetRec(env, exprLet)
-                    : jExprLet(env, exprLet);
             case ExprLitBool _ -> TypeOp.BOOL_TYPE;
             case ExprLitFloat _ -> TypeOp.FLOAT_TYPE;
             case ExprLitInt _ -> TypeOp.INT_TYPE;
             case ExprLitString _ -> TypeOp.STRING_TYPE;
-            case ExprLoop exprLoop -> jExprLoop(env, exprLoop);
-            case ExprReturn exprReturn -> jExprReturn(env, exprReturn);
-            case ExprBreak exprBreak -> jExprBreak(env, exprBreak);
-            case ExprStmtList exprStmtList -> jExprStmtList(env, exprStmtList);
+
             case ExprVar exprVar -> jExprVar(env, exprVar);
+            case ExprStmtList exprStmtList -> jExprStmtList(env, exprStmtList);
+            case ExprIf exprIf -> jExprIf(env, exprIf);
+            case ExprApp exprApp -> jExprApply(env, exprApp);
+            case ExprLoop exprLoop -> jExprLoop(env, exprLoop);
+            case ExprBreak exprBreak -> jExprBreak(env, exprBreak);
+
+            case ExprLet exprLet -> exprLet.rec()
+                    ? jExprLetRec(env, exprLet)
+                    : jExprLet(env, exprLet);
+            case ExprAbs exprAbs -> jExprAbs(env, exprAbs);
+            case ExprReturn exprReturn -> jExprReturn(env, exprReturn);s
         };
     }
 
