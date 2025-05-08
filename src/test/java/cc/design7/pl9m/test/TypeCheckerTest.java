@@ -1,4 +1,4 @@
-package cc.design7.pl9m;
+package cc.design7.pl9m.test;
 
 import cc.design7.pl9m.ast.*;
 import cc.design7.pl9m.syntax.SourceLocation;
