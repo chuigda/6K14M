@@ -12,9 +12,11 @@ native-decl ::= 'let' 'native' identifier '=' string
 
 type-decl ::= 'type' identifier '=' type-definition
 
-type-definition ::= type-constructor-list | string
+type-definition ::= type-constructor-list
+                  | string+
 
-type-constructor-list ::= type-constructor-list '|' type-constructor | type-constructor
+type-constructor-list ::= type-constructor-list '|' type-constructor
+                        | type-constructor
 
 type-constructor ::= identifier identifier*
 
