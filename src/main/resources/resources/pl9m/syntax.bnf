@@ -33,7 +33,6 @@ non-application-expr ::= integer
                        | string
                        | identifier
                        | abstraction-expr
-                       | application-expr
                        | let-expr
                        | stmt-list
                        | return-expr
