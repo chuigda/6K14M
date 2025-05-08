@@ -5,8 +5,8 @@ import org.jetbrains.annotations.NotNull;
 import java.util.HashMap;
 import java.util.List;
 
-public record TypeScheme(List<TypeVar> free, Type type) {
-    public Type instantiate(HashMap<Greek, Long> greekTimestamps) {
+public record TypeScheme(List<TypeVar> free, IType type) {
+    public IType instantiate(HashMap<Greek, Long> greekTimestamps) {
         HashMap<TypeVar, TypeVar> free = new HashMap<>();
         for (TypeVar var : this.free) {
             free.put(var, new TypeVar(var.greek, greekTimestamps));

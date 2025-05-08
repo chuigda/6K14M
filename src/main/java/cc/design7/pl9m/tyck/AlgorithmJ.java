@@ -7,15 +7,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 public final class AlgorithmJ {
-    public static Type J(TypeEnv env, IExpr expr) throws TypeCheckException {
-        Type type = jImpl(env, expr).prune();
+    public static IType J(TypeEnv env, IExpr expr) throws TyckException {
+        IType type = jImpl(env, expr).prune();
         if (expr instanceof ITypeResolvable typeResolvable) {
             typeResolvable.typeRef().value = type;
         }
         return type;
     }
 
-    private static Type jImpl(TypeEnv env, IExpr expr) throws TypeCheckException {
+    private static IType jImpl(TypeEnv env, IExpr expr) throws TyckException {
         return switch (expr) {
             case ExprLitBool _ -> TypeOp.BOOL_TYPE;
             case ExprLitFloat _ -> TypeOp.FLOAT_TYPE;
@@ -38,8 +38,8 @@ public final class AlgorithmJ {
         };
     }
 
-    private static Type jExprAbs(TypeEnv env, ExprAbs exprAbs) throws TypeCheckException {
-        List<Type> functionTypeArgs = new ArrayList<>();
+    private static IType jExprAbs(TypeEnv env, ExprAbs exprAbs) throws TyckException {
+        List<IType> functionTypeArgs = new ArrayList<>();
 
         TypeVar returnType = new TypeVar(Greek.ETA, env.greekTimestamps());
 
@@ -51,18 +51,18 @@ public final class AlgorithmJ {
             functionTypeArgs.add(beta);
         }
 
-        Type t1 = J(env1, exprAbs.body());
+        IType t1 = J(env1, exprAbs.body());
         Unify.unify(returnType, t1);
 
         functionTypeArgs.add(t1);
         return TypeOp.functionType(functionTypeArgs);
     }
 
-    private static Type jExprApply(TypeEnv env, ExprApp exprApply) throws TypeCheckException {
-        Type pi = new TypeVar(Greek.PI, env.greekTimestamps());
+    private static IType jExprApply(TypeEnv env, ExprApp exprApply) throws TyckException {
+        IType pi = new TypeVar(Greek.PI, env.greekTimestamps());
 
-        Type fnType = J(env, exprApply.fn());
-        List<Type> functionTypeArgs = new ArrayList<>();
+        IType fnType = J(env, exprApply.fn());
+        List<IType> functionTypeArgs = new ArrayList<>();
         for (IExpr arg : exprApply.args()) {
             functionTypeArgs.add(J(env, arg));
         }
@@ -72,11 +72,11 @@ public final class AlgorithmJ {
         return pi;
     }
 
-    private static Type jExprIf(TypeEnv env, ExprIf exprIf) throws TypeCheckException {
-        Type condType = J(env, exprIf.cond());
-        Type thenType = J(env, exprIf.then());
+    private static IType jExprIf(TypeEnv env, ExprIf exprIf) throws TyckException {
+        IType condType = J(env, exprIf.cond());
+        IType thenType = J(env, exprIf.then());
 
-        @Nullable Type otherwiseType = null;
+        @Nullable IType otherwiseType = null;
         if (exprIf.otherwise() != null) {
             otherwiseType = J(env, exprIf.otherwise());
         }
@@ -90,7 +90,7 @@ public final class AlgorithmJ {
         }
     }
 
-    private static Type jExprLetRec(TypeEnv env, ExprLet exprLetRec) throws TypeCheckException {
+    private static IType jExprLetRec(TypeEnv env, ExprLet exprLetRec) throws TyckException {
         TypeEnv env1 = new TypeEnv(env, null, null);
         List<TypeVar> typeVars = new ArrayList<>();
 
@@ -104,7 +104,7 @@ public final class AlgorithmJ {
 
         for (int i = 0; i < exprLetRec.values().size(); i++) {
             IExpr expr = exprLetRec.values().get(i);
-            Type actualType = J(env1, expr);
+            IType actualType = J(env1, expr);
             Unify.unify(typeVars.get(i), actualType);
         }
 
@@ -116,12 +116,12 @@ public final class AlgorithmJ {
         return J(env1, exprLetRec.body());
     }
 
-    private static Type jExprLet(TypeEnv env, ExprLet exprLet) throws TypeCheckException {
+    private static IType jExprLet(TypeEnv env, ExprLet exprLet) throws TyckException {
         TypeEnv env1 = new TypeEnv(env, null, null);
 
         List<TypeScheme> typeSchemes = new ArrayList<>();
         for (IExpr expr : exprLet.values()) {
-            Type t = J(env1, expr);
+            IType t = J(env1, expr);
             typeSchemes.add(generalize(env1, t));
         }
 
@@ -134,61 +134,61 @@ public final class AlgorithmJ {
         return J(env1, exprLet.body());
     }
 
-    private static Type jExprLoop(TypeEnv env, ExprLoop exprLoop) throws TypeCheckException {
+    private static IType jExprLoop(TypeEnv env, ExprLoop exprLoop) throws TyckException {
         TypeVar loopBreakType = new TypeVar(Greek.ETA, env.greekTimestamps());
         TypeEnv env1 = new TypeEnv(env, /*returnType=*/null, loopBreakType);
         J(env1, exprLoop.body());
         return loopBreakType;
     }
 
-    private static Type jExprReturn(TypeEnv env, ExprReturn exprReturn) throws TypeCheckException {
-        @Nullable Type returnType = env.closestReturnType();
+    private static IType jExprReturn(TypeEnv env, ExprReturn exprReturn) throws TyckException {
+        @Nullable IType returnType = env.closestReturnType();
         if (returnType == null) {
-            throw new TypeCheckException("错误: 在非函数上下文中使用 return 表达式");
+            throw new TyckException("错误: 在非函数上下文中使用 return 表达式");
         }
 
-        Type actualRetType = exprReturn.value() != null
+        IType actualRetType = exprReturn.value() != null
                 ? J(env, exprReturn.value())
                 : TypeOp.UNIT_TYPE;
         Unify.unify(returnType, actualRetType);
         return new TypeVar(Greek.ETA, env.greekTimestamps());
     }
 
-    private static Type jExprBreak(TypeEnv env, ExprBreak exprBreak) throws TypeCheckException {
-        @Nullable Type loopBreakType = env.closestLoopBreakType();
+    private static IType jExprBreak(TypeEnv env, ExprBreak exprBreak) throws TyckException {
+        @Nullable IType loopBreakType = env.closestLoopBreakType();
         if (loopBreakType == null) {
-            throw new TypeCheckException("错误: 在非循环上下文中使用 break 表达式");
+            throw new TyckException("错误: 在非循环上下文中使用 break 表达式");
         }
 
-        Type actualBreakType = exprBreak.value() != null
+        IType actualBreakType = exprBreak.value() != null
                 ? J(env, exprBreak.value())
                 : TypeOp.UNIT_TYPE;
         Unify.unify(loopBreakType, actualBreakType);
         return new TypeVar(Greek.ETA, env.greekTimestamps());
     }
 
-    private static Type jExprStmtList(
+    private static IType jExprStmtList(
             TypeEnv env,
             ExprStmtList exprStmtList
-    ) throws TypeCheckException {
-        Type lastType = TypeOp.UNIT_TYPE;
+    ) throws TyckException {
+        IType lastType = TypeOp.UNIT_TYPE;
         for (IExpr expr : exprStmtList.stmtList()) {
             lastType = J(env, expr);
         }
         return lastType;
     }
 
-    private static Type jExprVar(TypeEnv env, ExprVar exprVar) throws TypeCheckException {
+    private static IType jExprVar(TypeEnv env, ExprVar exprVar) throws TyckException {
         String varName = exprVar.varName();
         TypeScheme typeScheme = env.lookup(varName);
         if (typeScheme == null) {
-            throw new TypeCheckException("错误: 未定义变量 %s".formatted(varName));
+            throw new TyckException("错误: 未定义变量 %s".formatted(varName));
         }
 
         return typeScheme.instantiate(env.greekTimestamps());
     }
 
-    private static TypeScheme generalize(TypeEnv env, Type t) {
+    private static TypeScheme generalize(TypeEnv env, IType t) {
         t = t.prune();
         List<TypeVar> typeVars = new ArrayList<>();
         t.collectTypeVars(typeVars);

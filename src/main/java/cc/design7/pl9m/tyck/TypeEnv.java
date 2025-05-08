@@ -9,15 +9,15 @@ import java.util.List;
 public record TypeEnv(
         HashMap<Greek, Long> greekTimestamps,
         @Nullable TypeEnv parent,
-        @Nullable Type returnType,
-        @Nullable Type loopBreakType,
+        @Nullable IType returnType,
+        @Nullable IType loopBreakType,
         HashMap<String, TypeScheme> vars,
         HashSet<TypeVar> nonGenericTypeVars
 ) {
     public TypeEnv(
             @Nullable TypeEnv parent,
-            @Nullable Type returnType,
-            @Nullable Type loopBreakType
+            @Nullable IType returnType,
+            @Nullable IType loopBreakType
     ) {
         this(
                 parent != null ? parent.greekTimestamps : new HashMap<>(),

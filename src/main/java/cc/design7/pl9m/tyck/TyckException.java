@@ -2,11 +2,11 @@ package cc.design7.pl9m.tyck;
 
 import java.util.ArrayList;
 
-public final class TypeCheckException extends Exception{
+public final class TyckException extends Exception{
     public final String message;
     public final ArrayList<String> chain;
 
-    public TypeCheckException(String message) {
+    public TyckException(String message) {
         this.message = message;
         this.chain = new ArrayList<>();
     }

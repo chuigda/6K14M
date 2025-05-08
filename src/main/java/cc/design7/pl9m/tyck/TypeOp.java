@@ -6,10 +6,10 @@ import org.jetbrains.annotations.NotNull;
 import java.util.List;
 import java.util.Map;
 
-public record TypeOp(String op, List<Type> args) implements Type {
+public record TypeOp(String op, List<IType> args) implements IType {
     @Override
     public boolean containsTypeVar(TypeVar typeVar) {
-        for (Type arg : args) {
+        for (IType arg : args) {
             if (arg.containsTypeVar(typeVar)) {
                 return true;
             }
@@ -19,13 +19,13 @@ public record TypeOp(String op, List<Type> args) implements Type {
 
     @Override
     public void collectTypeVars(List<TypeVar> dest) {
-        for (Type arg : args) {
+        for (IType arg : args) {
             arg.collectTypeVars(dest);
         }
     }
 
     @Override
-    public Type instantiate(Map<TypeVar, TypeVar> freeVars) {
+    public IType instantiate(Map<TypeVar, TypeVar> freeVars) {
         if (args.isEmpty()) {
             return this;
         }
@@ -37,14 +37,14 @@ public record TypeOp(String op, List<Type> args) implements Type {
     }
 
     @Override
-    public Type prune() {
+    public IType prune() {
         if (args.isEmpty()) {
             return this;
         }
 
         for (int i = 0; i < args.size(); i++) {
-            Type arg = args.get(i);
-            Type pruned = arg.prune();
+            IType arg = args.get(i);
+            IType pruned = arg.prune();
             if (pruned != arg) {
                 args.set(i, pruned);
             }
@@ -80,7 +80,7 @@ public record TypeOp(String op, List<Type> args) implements Type {
         StringBuilder sb = new StringBuilder();
         if (this.op.equals("*") || this.op.equals("->")) {
             for (int i = 0; i < args.size(); i++) {
-                Type arg = args.get(i);
+                IType arg = args.get(i);
                 if (arg.needQuote()) {
                     sb.append('(').append(arg).append(')');
                 } else {
@@ -98,7 +98,7 @@ public record TypeOp(String op, List<Type> args) implements Type {
         } else {
             sb.append(op).append(' ');
             for (int i = 0; i < args.size(); i++) {
-                Type arg = args.get(i);
+                IType arg = args.get(i);
                 if (arg.needQuote()) {
                     sb.append('(').append(arg).append(')');
                 } else {
@@ -121,7 +121,7 @@ public record TypeOp(String op, List<Type> args) implements Type {
     public static final TypeOp STRING_TYPE = new TypeOp("string", List.of());
 
     @Contract("_ -> new")
-    public static @NotNull TypeOp productType(List<Type> args) {
+    public static @NotNull TypeOp productType(List<IType> args) {
         if (args.isEmpty()) {
             return UNIT_TYPE;
         }
@@ -130,7 +130,7 @@ public record TypeOp(String op, List<Type> args) implements Type {
     }
 
     @Contract("_ -> new")
-    public static @NotNull TypeOp functionType(List<Type> args) {
+    public static @NotNull TypeOp functionType(List<IType> args) {
         return new TypeOp("->", args);
     }
 }

@@ -6,10 +6,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public final class TypeVar implements Type {
+public final class TypeVar implements IType {
     public final Greek greek;
     public final long timestamp;
-    public @Nullable Type resolve;
+    public @Nullable IType resolve;
 
     public TypeVar(Greek greek, HashMap<Greek, Long> greekTimestamps) {
         long timestamp = greekTimestamps.getOrDefault(greek, 0L);
@@ -31,14 +31,14 @@ public final class TypeVar implements Type {
     }
 
     @Override
-    public Type instantiate(Map<TypeVar, TypeVar> freeVars) {
+    public IType instantiate(Map<TypeVar, TypeVar> freeVars) {
         return freeVars.getOrDefault(this, this);
     }
 
     @Override
-    public Type prune() {
+    public IType prune() {
         if (this.resolve != null) {
-            Type pruned = this.resolve.prune();
+            IType pruned = this.resolve.prune();
             this.resolve = pruned;
             return pruned;
         } else {

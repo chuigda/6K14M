@@ -3,7 +3,7 @@ package cc.design7.pl9m;
 import cc.design7.pl9m.ast.*;
 import cc.design7.pl9m.syntax.SourceLocation;
 import cc.design7.pl9m.tyck.AlgorithmJ;
-import cc.design7.pl9m.tyck.Type;
+import cc.design7.pl9m.tyck.IType;
 import cc.design7.pl9m.tyck.TypeEnv;
 import org.junit.jupiter.api.Test;
 
@@ -36,7 +36,7 @@ public final class TypeCheckerTest {
                 )
         );
 
-        Type type = AlgorithmJ.J(new TypeEnv(null, null, null), expr);
+        IType type = AlgorithmJ.J(new TypeEnv(null, null, null), expr);
         System.out.println("J(Γ, let id = \\x. x in (id id) (id id)) = " + type);
     }
 
@@ -54,7 +54,7 @@ public final class TypeCheckerTest {
                 new ExprVar(SourceLocation.DUMMY, "second")
         );
 
-        Type type = AlgorithmJ.J(new TypeEnv(null, null, null), expr);
+        IType type = AlgorithmJ.J(new TypeEnv(null, null, null), expr);
         System.out.println("J(Γ, let second = \\x. \\y. y in second) = " + type);
     }
 
@@ -66,7 +66,7 @@ public final class TypeCheckerTest {
                 new ExprLoop(SourceLocation.DUMMY, new ExprStmtList(SourceLocation.DUMMY, List.of()))
         );
 
-        Type type = AlgorithmJ.J(new TypeEnv(null, null, null), expr);
+        IType type = AlgorithmJ.J(new TypeEnv(null, null, null), expr);
         System.out.println("J(Γ, \\x. loop pass end) = " + type);
     }
 
@@ -84,7 +84,33 @@ public final class TypeCheckerTest {
                 )
         );
 
-        Type type = AlgorithmJ.J(new TypeEnv(null, null, null), expr);
+        IType type = AlgorithmJ.J(new TypeEnv(null, null, null), expr);
         System.out.println("J(Γ, \\x. loop break x end) = " + type);
+    }
+
+    @Test
+    void testLoop3() throws Exception {
+        IExpr expr = new ExprAbs(
+                SourceLocation.DUMMY,
+                List.of("x", "y", "z"),
+                new ExprLoop(
+                        SourceLocation.DUMMY,
+                        new ExprIf(
+                                SourceLocation.DUMMY,
+                                new ExprVar(SourceLocation.DUMMY, "x"),
+                                new ExprBreak(
+                                        SourceLocation.DUMMY,
+                                        new ExprVar(SourceLocation.DUMMY, "y")
+                                ),
+                                new ExprBreak(
+                                        SourceLocation.DUMMY,
+                                        new ExprVar(SourceLocation.DUMMY, "z")
+                                )
+                        )
+                )
+        );
+
+        IType type = AlgorithmJ.J(new TypeEnv(null, null, null), expr);
+        System.out.println("J(Γ, \\x y z. loop if x break y else break z end) = " + type);
     }
 }
