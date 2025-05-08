@@ -14,7 +14,7 @@ native-decl ::= 'native' identifier '=' string
 type-decl ::= 'type' identifier '=' type-definition
 
 type-definition ::= type-constructor-list
-                  | string+
+                  | 'native' string
 
 type-constructor-list ::= type-constructor-list '|' type-constructor
                         | type-constructor
@@ -25,29 +25,37 @@ let-assign-list ::= let-assign-list let-assign | nil
 
 let-assign ::= identifier '=' expr
 
-expr ::= integer
-       | float
-       | 'true' | 'false'
-       | string
-       | identifier
-       | abstraction-expr
-       | application-expr
-       | let-expr
-       | stmt-list
-       | return-expr
-       | if-expr
-       | loop-expr
-       | '(' expr ')'
+expr ::= application-expr | non-application-expr
+
+non-application-expr ::= integer
+                       | float
+                       | 'true' | 'false'
+                       | string
+                       | identifier
+                       | abstraction-expr
+                       | application-expr
+                       | let-expr
+                       | stmt-list
+                       | return-expr
+                       | break-expr
+                       | continue-expr
+                       | if-expr
+                       | loop-expr
+                       | '(' expr ')'
 
 abstraction-expr ::= ('\\' | 'lambda') (identifier+ | '()') '.' expr
 
-application-expr ::= identifier expr-list
+application-expr ::= non-application-expr expr-list
 
 let-expr ::= 'let' 'rec'? let-assign-list 'in' expr
 
 stmt-list ::= 'begin' semicolon-sep-expr-list 'end'
 
 return-expr ::= 'return' expr?
+
+break-expr ::= 'break' expr?
+
+continue-expr ::= 'continue'
 
 if-expr ::= 'if' expr 'then' expr ('else' expr)?
 
