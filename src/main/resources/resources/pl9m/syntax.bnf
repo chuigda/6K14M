@@ -3,12 +3,13 @@ program ::= global-decl-list
 global-decl-list ::= global-decl-list global-decl | nil
 
 global-decl ::= let-decl
-              | native-decl
               | type-decl
 
-let-decl ::= 'let' 'rec'? let-assign-list
+let-decl ::= 'let' (normal-decl | native-decl)
 
-native-decl ::= 'let' 'native' identifier '=' string
+normal-decl ::= 'rec'? let-assign-list
+
+native-decl ::= 'native' identifier '=' string
 
 type-decl ::= 'type' identifier '=' type-definition
 
