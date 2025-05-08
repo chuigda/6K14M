@@ -11,8 +11,7 @@ import java.util.List;
 
 public final class TypeCheckerTest {
     @Test
-    void test1() throws Exception {
-        // let id = \x. x in (id id) (id id)
+    void testBasic() throws Exception {
         IExpr expr = new ExprLet(
                 SourceLocation.DUMMY,
                 false,
@@ -38,6 +37,54 @@ public final class TypeCheckerTest {
         );
 
         Type type = AlgorithmJ.J(new TypeEnv(null, null, null), expr);
-        System.out.println(type);
+        System.out.println("J(Γ, let id = \\x. x in (id id) (id id)) = " + type);
+    }
+
+    @Test
+    void testId() throws Exception {
+        IExpr expr = new ExprLet(
+                SourceLocation.DUMMY,
+                false,
+                List.of("second"),
+                List.of(new ExprAbs(
+                        SourceLocation.DUMMY,
+                        List.of("x", "y"),
+                        new ExprVar(SourceLocation.DUMMY, "y")
+                )),
+                new ExprVar(SourceLocation.DUMMY, "second")
+        );
+
+        Type type = AlgorithmJ.J(new TypeEnv(null, null, null), expr);
+        System.out.println("J(Γ, let second = \\x. \\y. y in second) = " + type);
+    }
+
+    @Test
+    void testLoop() throws Exception {
+        IExpr expr = new ExprAbs(
+                SourceLocation.DUMMY,
+                List.of("x"),
+                new ExprLoop(SourceLocation.DUMMY, new ExprStmtList(SourceLocation.DUMMY, List.of()))
+        );
+
+        Type type = AlgorithmJ.J(new TypeEnv(null, null, null), expr);
+        System.out.println("J(Γ, \\x. loop pass end) = " + type);
+    }
+
+    @Test
+    void testLoop2() throws Exception {
+        IExpr expr = new ExprAbs(
+                SourceLocation.DUMMY,
+                List.of("x"),
+                new ExprLoop(
+                        SourceLocation.DUMMY,
+                        new ExprBreak(
+                                SourceLocation.DUMMY,
+                                new ExprVar(SourceLocation.DUMMY, "x")
+                        )
+                )
+        );
+
+        Type type = AlgorithmJ.J(new TypeEnv(null, null, null), expr);
+        System.out.println("J(Γ, \\x. loop break x end) = " + type);
     }
 }
