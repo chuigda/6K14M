@@ -83,6 +83,8 @@ let-expr ::= 'let' 'rec'? let-assign-list 'in' expr
 
 stmt-list ::= 'begin' semicolon-sep-expr-list 'end'
 
+semicolon-sep-expr-list ::= semicolon-sep-expr-list ';' expr | nil
+
 return-expr ::= 'return' expr?
 
 break-expr ::= 'break' expr?
@@ -93,7 +95,12 @@ if-expr ::= 'if' expr 'then' expr ('else' expr)?
 
 loop-expr ::= 'loop' expr 'end'
 
+abs-expr ::= 'lambda' '(' identifier-list ')' expr
+
+identifier-list ::= identifier-list identifier | nil
+
 expr ::= let-expr
+       | abs-expr
        | stmt-list
        | return-expr
        | break-expr
@@ -101,5 +108,3 @@ expr ::= let-expr
        | if-expr
        | loop-expr
        | logical-or-expr
-
-semicolon-sep-expr-list ::= semicolon-sep-expr-list ';' expr | expr
