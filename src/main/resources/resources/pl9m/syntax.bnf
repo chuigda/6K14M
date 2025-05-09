@@ -1,6 +1,6 @@
 program ::= global-decl-list
 
-global-decl-list ::= global-decl*
+global-decl-list ::= global-decl-list global-decl | nil
 
 global-decl ::= let-decl | type-decl
 
@@ -10,40 +10,74 @@ let-normal-decl ::= 'rec'? let-assign-list
 
 let-native-decl ::= 'native' identifier '=' string
 
-type-decl ::= 'type' identifier '=' type-definition
+type-decl ::= 'type' (adt-decl | native-type-decl)
 
-type-definition ::= type-constructor-list
-                  | 'native' string
+adt-decl ::= identifier type-var-list '=' type-ctor-list
 
-type-constructor-list ::= type-constructor-list '|' type-constructor
-                        | type-constructor
+type-ctor-list ::= type-ctor-list type-ctor | type-ctor
 
-type-constructor ::= identifier identifier*
+type-ctor ::= identifier type-var-list
 
-let-assign-list ::= let-assign+
+type-var-list ::= type-var-list identifier | nil
+
+native-type-decl ::= 'native' identifier '=' string string
+
+let-assign-list ::= let-assign-list let-assign | let-assign
 
 let-assign ::= identifier '=' expr
 
-expr ::= application-expr | non-application-expr
+primary-expr ::= identifier | constant | string | '(' expr ')'
 
-non-application-expr ::= integer
-                       | float
-                       | 'true' | 'false'
-                       | string
-                       | identifier
-                       | abstraction-expr
-                       | let-expr
-                       | stmt-list
-                       | return-expr
-                       | break-expr
-                       | continue-expr
-                       | if-expr
-                       | loop-expr
-                       | '(' expr ')'
+postfix-expr ::= primary-expr
+               | postfix-expr '.' (identifier | int)
+               | postfix-expr '[' expr ']'
+               | postfix-expr '(' argument-expr-list? ')'
 
-abstraction-expr ::= ('\\' | 'lambda') (identifier+ | '()') '.' expr
+argument-expr-list ::= expr | argument-expr-list expr
 
-application-expr ::= non-application-expr+
+unary-expr ::= postfix-expr
+             | unary-op unary-expr
+
+unary-op ::= '+' | '-' | '~' | '!'
+
+multiplicative-expr ::= multiplicative-expr multiplicative-op unary-expr
+
+multiplicative-op ::= '*' | '/' | '%' | 'f*' | 'f/' | 'f%'
+
+additive-expr ::= multiplicative-expr
+                | additive-expr additive-op multiplicative-expr
+
+additive-op ::= '+' | '-' | 'f+' | 'f-'
+
+shift-expr ::= additive-expr
+             | shift-expr shift-op additive-expr
+
+shift-op ::= '<<' | '>>' | '>>>'
+
+relational-expr ::= shift-expr
+                  | relational-expr relational-op shift-expr
+
+relational-op ::= '<' | '>' | '<=' | '>=' | 'f<' | 'f>' | 'f<=' | 'f>='
+
+equality-expr ::= relational-expr
+                | equality-expr equality-op relational-expr
+
+equality-op ::= '==' | '!='
+
+bitwise-and-expr ::= equality-expr
+                  | bitwise-and-expr '&' equality-expr
+
+bitwise-xor-expr ::= bitwise-and-expr
+                  | bitwise-xor-expr '^' bitwise-and-expr
+
+bitwise-or-expr ::= bitwise-xor-expr
+                 | bitwise-or-expr '|' bitwise-xor-expr
+
+logical-and-expr ::= bitwise-or-expr
+                   | logical-and-expr '&&' bitwise-or-expr
+
+logical-or-expr ::= logical-and-expr
+                  | logical-or-expr '||' logical-and-expr
 
 let-expr ::= 'let' 'rec'? let-assign-list 'in' expr
 
@@ -58,5 +92,14 @@ continue-expr ::= 'continue'
 if-expr ::= 'if' expr 'then' expr ('else' expr)?
 
 loop-expr ::= 'loop' expr 'end'
+
+expr ::= let-expr
+       | stmt-list
+       | return-expr
+       | break-expr
+       | continue-expr
+       | if-expr
+       | loop-expr
+       | logical-or-expr
 
 semicolon-sep-expr-list ::= semicolon-sep-expr-list ';' expr | expr
