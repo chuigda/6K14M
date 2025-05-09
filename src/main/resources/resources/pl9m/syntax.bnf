@@ -49,7 +49,7 @@ unary-expr ::= postfix-expr
 
 unary-op ::= '+' | '-' | '~' | '!'
 
-multiplicative-expr ::= multiplicative-expr multiplicative-op unary-expr
+multiplicative-expr ::= unary-expr | multiplicative-expr multiplicative-op unary-expr
 
 multiplicative-op ::= '*' | '/' | '%' | 'f*' | 'f/' | 'f%'
 
