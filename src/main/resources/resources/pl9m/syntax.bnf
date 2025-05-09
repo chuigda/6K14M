@@ -1,6 +1,6 @@
 program ::= global-decl-list?
 
-global-decl-list ::= global-decl-list global-decl
+global-decl-list ::= global-decl-list global-decl | global-decl
 
 global-decl ::= let-decl | type-decl
 
@@ -22,12 +22,12 @@ type-ctor ::= identifier type-list?
 
 type-list ::= type-list ',' type | type
 
-type ::= 'int' | 'float' | 'bool' | 'string' | 'unit'
+type ::= 'int' | 'float' | 'bool' | 'string'
        | identifier ('<' type-list '>')?
        | '(' type-list? ')'
        | 'fn' '(' type-list? ')' '->' type
 
-type-var-list ::= type-var-list identifier | identifier
+type-var-list ::= type-var-list ',' identifier | identifier
 
 native-type-decl ::= 'native' identifier '=' /*type*/string /*ctor*/string
 
@@ -42,7 +42,7 @@ postfix-expr ::= primary-expr
                | postfix-expr '[' expr ']'
                | postfix-expr '(' argument-expr-list? ')'
 
-argument-expr-list ::= expr | argument-expr-list ',' expr
+argument-expr-list ::= argument-expr-list ',' expr | expr
 
 unary-expr ::= postfix-expr
              | unary-op unary-expr
@@ -104,7 +104,7 @@ if-expr ::= 'if' expr 'then' expr ('else' expr)?
 
 match-expr ::= 'match' /*adt type*/identifier expr case-clause-list 'end'
 
-case-clause-list ::= case-clause-list case-clause
+case-clause-list ::= case-clause-list case-clause | case-clause
 
 case-clause ::= 'case' /*ctor*/identifier /*var*/identifier? ('as' identifier-list)? '->' expr
               | 'default' '->' expr
