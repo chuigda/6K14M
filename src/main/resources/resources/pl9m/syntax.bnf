@@ -113,6 +113,8 @@ loop-expr ::= 'loop' expr 'end'
 
 abs-expr ::= 'lambda' '(' identifier-list? ')' expr
 
+assign-expr ::= identifier ':=' expr
+
 identifier-list ::= identifier-list ',' identifier | identifier
 
 expr ::= let-expr
@@ -125,3 +127,4 @@ expr ::= let-expr
        | match-expr
        | loop-expr
        | logical-or-expr
+       | assign-expr
