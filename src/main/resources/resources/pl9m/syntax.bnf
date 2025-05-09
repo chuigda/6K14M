@@ -1,15 +1,14 @@
 program ::= global-decl-list
 
-global-decl-list ::= global-decl-list global-decl | nil
+global-decl-list ::= global-decl*
 
-global-decl ::= let-decl
-              | type-decl
+global-decl ::= let-decl | type-decl
 
-let-decl ::= 'let' (normal-decl | native-decl)
+let-decl ::= 'let' (let-normal-decl | let-native-decl)
 
-normal-decl ::= 'rec'? let-assign-list
+let-normal-decl ::= 'rec'? let-assign-list
 
-native-decl ::= 'native' identifier '=' string
+let-native-decl ::= 'native' identifier '=' string
 
 type-decl ::= 'type' identifier '=' type-definition
 
@@ -21,7 +20,7 @@ type-constructor-list ::= type-constructor-list '|' type-constructor
 
 type-constructor ::= identifier identifier*
 
-let-assign-list ::= let-assign-list let-assign | nil
+let-assign-list ::= let-assign+
 
 let-assign ::= identifier '=' expr
 
@@ -44,7 +43,7 @@ non-application-expr ::= integer
 
 abstraction-expr ::= ('\\' | 'lambda') (identifier+ | '()') '.' expr
 
-application-expr ::= non-application-expr expr-list
+application-expr ::= non-application-expr+
 
 let-expr ::= 'let' 'rec'? let-assign-list 'in' expr
 
@@ -59,7 +58,5 @@ continue-expr ::= 'continue'
 if-expr ::= 'if' expr 'then' expr ('else' expr)?
 
 loop-expr ::= 'loop' expr 'end'
-
-expr-list ::= expr-list expr | nil
 
 semicolon-sep-expr-list ::= semicolon-sep-expr-list ';' expr | expr
