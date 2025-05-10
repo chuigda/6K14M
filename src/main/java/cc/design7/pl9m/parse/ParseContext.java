@@ -22,7 +22,7 @@ public record ParseContext(int index, byte[] bytes, SourceLocation location) {
             int line,
             int col
     ) throws ParseException {
-        int[] newPos = skipWhitespace(bytes, index, file, line, col);
+        int[] newPos = skipWhitespace(bytes, index, line, col);
         index = newPos[0];
         line = newPos[1];
         col = newPos[2];
@@ -33,17 +33,11 @@ public record ParseContext(int index, byte[] bytes, SourceLocation location) {
             return new Pair<>(new Token(Token.Kind.EOI, eoiLocation), context);
         }
 
-        // TODO
-        return null;
+        byte b = bytes[index];
+        return null; // TODO
     }
 
-    public static int[] skipWhitespace(
-            byte[] bytes,
-            int index,
-            @Nullable String file,
-            int line,
-            int col
-    ) throws ParseException {
+    private static int[] skipWhitespace(byte[] bytes, int index, int line, int col) {
         while (true) {
             if (index >= bytes.length) {
                 break;
