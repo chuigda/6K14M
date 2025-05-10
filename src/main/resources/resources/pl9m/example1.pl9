@@ -4,13 +4,13 @@ let native print = 'cc.design7.pl9m.Runtime#print(java.lang.String)'
 let native println = 'cc.design7.pl9m.Runtime#println(java.lang.String)'
 let native to_string = 'java.util.Objects#toString(java.lang.Object)java.lang.String'
 
-let decl fibonacci :: (int) -> int
+let decl sum :: (int, int) -> int
 
-let fibonacci = fn (x)
-    let i = box(1),
+let sum = fn (start, end)
+    let i   = box(start),
         sum = box(0)
     in loop
-        if *i > x then
+        if *i > end then
             break *sum
         end
 
@@ -21,6 +21,6 @@ let fibonacci = fn (x)
 let decl main :: (list<string>) -> ()
 
 let main = fn (args) begin
-    println("Fibonacci of 10 is: ");
-    println(to_string(fibonacci(10)))
+    println("Sum from 1 to 10 is: ");
+    println(to_string(sum(1, 10)))
 end
