@@ -1,4 +1,4 @@
-type native list<a> = 'java.util.List' 'java.util.ArrayList#(int)'
+type native list<a> = 'java.util.List' 'java.util.ArrayList#()'
 
 let native print = 'cc.design7.pl9m.Runtime#print(java.lang.String)'
 let native println = 'cc.design7.pl9m.Runtime#println(java.lang.String)'
@@ -21,6 +21,6 @@ let sum = fn (start, end)
 let decl main :: (list<string>) -> ()
 
 let main = fn (args) begin
-    println("Sum from 1 to 10 is: ");
+    print("Sum from 1 to 10 is: ");
     println(to_string(sum(1, 10)))
 end
