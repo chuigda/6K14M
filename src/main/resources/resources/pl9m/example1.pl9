@@ -2,6 +2,7 @@ type native list<a> = 'java.util.List' 'java.util.ArrayList#(int)'
 
 let native print = 'cc.design7.pl9m.Runtime#print(java.lang.String)'
 let native println = 'cc.design7.pl9m.Runtime#println(java.lang.String)'
+let native to_string = 'java.util.Objects#toString(java.lang.Object)java.lang.String'
 
 let decl fibonacci :: (int) -> int
 
