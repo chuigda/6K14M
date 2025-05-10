@@ -160,6 +160,174 @@ public record ParseContext(int index, byte[] bytes, SourceLocation location) {
         return b >= '0' && b <= '9';
     }
 
+    private static Pair<Token, ParseContext> scanNumber(
+            byte[] bytes,
+            int index,
+            @Nullable String file,
+            int line,
+            int col
+    ) throws ParseException {
+        SourceLocation location = new SourceLocation(file, line, col);
+        int startIndex = index;
+        int currentCol = col;
+
+        while (index < bytes.length && bytes[index] >= '0' && bytes[index] <= '9') {
+            index++;
+            currentCol++;
+        }
+
+        boolean isFloat = false;
+        if (index < bytes.length && bytes[index] == '.') {
+            if (index + 1 < bytes.length && bytes[index + 1] >= '0' && bytes[index + 1] <= '9') {
+                isFloat = true;
+                do {
+                    index++;
+                    currentCol++;
+                } while (index < bytes.length && bytes[index] >= '0' && bytes[index] <= '9');
+            }
+        }
+
+        String numStr = new String(bytes, startIndex, index - startIndex);
+        SourceLocation endLocation = new SourceLocation(file, line, currentCol);
+        ParseContext newContext = new ParseContext(index, bytes, endLocation);
+
+        if (isFloat) {
+            try {
+                double value = Double.parseDouble(numStr);
+                return new Pair<>(new Token(Token.Kind.LIT_FLOAT, location, value), newContext);
+            } catch (NumberFormatException e) {
+                throw new ParseException(location, "Invalid float literal: " + numStr);
+            }
+        } else {
+            try {
+                long value = Long.parseLong(numStr);
+                return new Pair<>(new Token(Token.Kind.LIT_INT, location, value), newContext);
+            } catch (NumberFormatException e) {
+                throw new ParseException(location, "Invalid or too large integer literal: " + numStr);
+            }
+        }
+    }
+
+    private static Pair<Token, ParseContext> scanString(
+            byte[] bytes,
+            int index,
+            @Nullable String file,
+            int line,
+            int col
+    ) throws ParseException {
+        throw new UnsupportedOperationException("not implemented");
+    }
+
+    private static Pair<Token, ParseContext> scanSymbol(
+            byte[] bytes,
+            int index,
+            @Nullable String file,
+            int line,
+            int col
+    ) throws ParseException {
+        SourceLocation location = new SourceLocation(file, line, col);
+        byte b1 = bytes[index];
+        @Nullable Token.Kind kind = null;
+        int len = 1;
+
+        switch (b1) {
+            case '=':
+                if (index + 1 < bytes.length && bytes[index + 1] == '=') {
+                    kind = Token.Kind.SYM_DEQ; len = 2;
+                } else {
+                    kind = Token.Kind.SYM_EQ;
+                }
+                break;
+            case ':':
+                if (index + 1 < bytes.length) {
+                    if (bytes[index + 1] == ':') {
+                        kind = Token.Kind.SYM_DCOLON; len = 2;
+                    } else if (bytes[index + 1] == '=') {
+                        kind = Token.Kind.SYM_COLONEQ; len = 2;
+                    }
+                }
+                break;
+            case '(': kind = Token.Kind.SYM_LPAREN; break;
+            case ')': kind = Token.Kind.SYM_RPAREN; break;
+            case '-':
+                if (index + 1 < bytes.length && bytes[index + 1] == '>') {
+                    kind = Token.Kind.SYM_ARROW; len = 2;
+                } else {
+                    kind = Token.Kind.SYM_MINUS;
+                }
+                break;
+            case '|':
+                if (index + 1 < bytes.length && bytes[index + 1] == '|') {
+                    kind = Token.Kind.SYM_DPIPE; len = 2;
+                } else {
+                    kind = Token.Kind.SYM_PIPE;
+                }
+                break;
+            case ',': kind = Token.Kind.SYM_COMMA; break;
+            case '<':
+                if (index + 1 < bytes.length) {
+                    if (bytes[index + 1] == '=') {
+                        kind = Token.Kind.SYM_LE; len = 2;
+                    } else if (bytes[index + 1] == '<') {
+                        kind = Token.Kind.SYM_DLT; len = 2;
+                    } else {
+                        kind = Token.Kind.SYM_LT;
+                    }
+                } else {
+                    kind = Token.Kind.SYM_LT;
+                }
+                break;
+            case '>':
+                if (index + 1 < bytes.length) {
+                    if (bytes[index + 1] == '=') {
+                        kind = Token.Kind.SYM_GE; len = 2;
+                    } else if (bytes[index + 1] == '>') {
+                        if (index + 2 < bytes.length && bytes[index + 2] == '>') {
+                            kind = Token.Kind.SYM_TGT; len = 3;
+                        } else {
+                            kind = Token.Kind.SYM_DGT; len = 2;
+                        }
+                    } else {
+                        kind = Token.Kind.SYM_GT;
+                    }
+                } else {
+                    kind = Token.Kind.SYM_GT;
+                }
+                break;
+            case '.': kind = Token.Kind.SYM_DOT; break;
+            case '[': kind = Token.Kind.SYM_LBRACKET; break;
+            case ']': kind = Token.Kind.SYM_RBRACKET; break;
+            case '+': kind = Token.Kind.SYM_PLUS; break;
+            case '~': kind = Token.Kind.SYM_TILDE; break;
+            case '!':
+                if (index + 1 < bytes.length && bytes[index + 1] == '=') {
+                    kind = Token.Kind.SYM_NEQ; len = 2;
+                } else {
+                    kind = Token.Kind.SYM_EXCLAIM;
+                }
+                break;
+            case '*': kind = Token.Kind.SYM_ASTER; break;
+            case '/': kind = Token.Kind.SYM_SLASH; break;
+            case '%': kind = Token.Kind.SYM_PERCENT; break;
+            case '&':
+                if (index + 1 < bytes.length && bytes[index + 1] == '&') {
+                    kind = Token.Kind.SYM_DAMP; len = 2;
+                } else {
+                    kind = Token.Kind.SYM_AMP;
+                }
+                break;
+            case '^': kind = Token.Kind.SYM_CARET; break;
+        }
+
+        if (kind != null) {
+            SourceLocation endLocation = new SourceLocation(file, line, col + len);
+            ParseContext newContext = new ParseContext(index + len, bytes, endLocation);
+            return new Pair<>(new Token(kind, location), newContext);
+        } else {
+            throw new ParseException(location, "Unexpected character: " + (char)b1);
+        }
+    }
+
     private static final HashMap<String, Token.Kind> KEYWORD_MAP = new HashMap<>();
     static {
         for (Token.Kind kind : Token.Kind.values()) {
