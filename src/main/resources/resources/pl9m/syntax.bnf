@@ -14,7 +14,7 @@ let-signature-decl ::= 'decl' identifier '::' '(' type-list? ')' '->' type
 
 type-decl ::= 'type' (adt-decl | native-type-decl)
 
-adt-decl ::= identifier type-var-list? '=' type-ctor-list
+adt-decl ::= identifier ('<' type-var-list '>')? '=' type-ctor-list
 
 type-ctor-list ::= type-ctor-list '|' type-ctor | type-ctor
 
@@ -29,7 +29,7 @@ type ::= 'int' | 'float' | 'bool' | 'string'
 
 type-var-list ::= type-var-list ',' identifier | identifier
 
-native-type-decl ::= 'native' identifier '=' /*type*/string /*ctor*/string
+native-type-decl ::= 'native' identifier ('<' type-var-list '>')? '=' /*type*/string /*ctor*/string
 
 let-assign-list ::= let-assign-list ',' let-assign | let-assign
 

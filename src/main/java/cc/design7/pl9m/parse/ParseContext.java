@@ -248,6 +248,7 @@ public record ParseContext(int index, byte[] bytes, SourceLocation location) {
                 }
                 break;
             case ',': kind = Token.Kind.SYM_COMMA; break;
+            case ';': kind = Token.Kind.SYM_SEMICOLON; break;
             case '<':
                 if (index + 1 < bytes.length) {
                     if (bytes[index + 1] == '=') {

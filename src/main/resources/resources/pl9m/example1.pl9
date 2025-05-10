@@ -1,3 +1,8 @@
+type native list<a> = 'java.util.List' 'java.util.ArrayList#(int)'
+
+let native print = 'cc.design7.pl9m.Runtime#print(java.lang.String)'
+let native println = 'cc.design7.pl9m.Runtime#println(java.lang.String)'
+
 let decl fibonacci :: (int) -> int
 
 let fibonacci = fn (x)
@@ -12,7 +17,9 @@ let fibonacci = fn (x)
         i := *i + 1
     end
 
-let decl main :: (int, array<string>) -> ()
+let decl main :: (list<string>) -> ()
 
-let main = fn (argc, argv)
-    print("Fibonacci of 10 is: ", int_to_string(fibonacci(10)))
+let main = fn (args) begin
+    println("Fibonacci of 10 is: ");
+    println(to_string(fibonacci(10)))
+end

@@ -45,6 +45,7 @@ public record Token(Kind kind, SourceLocation location, @Nullable Object value) 
         SYM_ARROW("->"),
         SYM_PIPE("|"),
         SYM_COMMA(","),
+        SYM_SEMICOLON(";"),
         SYM_LT("<"),
         SYM_GT(">"),
         SYM_LE("<="),
