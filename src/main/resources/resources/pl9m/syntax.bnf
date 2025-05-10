@@ -111,7 +111,7 @@ case-clause ::= 'case' /*ctor*/identifier /*var*/identifier? ('as' identifier-li
 
 loop-expr ::= 'loop' expr 'end'
 
-abs-expr ::= 'lambda' '(' identifier-list? ')' expr
+abs-expr ::= 'fn' '(' identifier-list? ')' expr
 
 assign-expr ::= identifier ':=' expr
 
