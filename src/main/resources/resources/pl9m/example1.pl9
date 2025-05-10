@@ -1,0 +1,18 @@
+let decl fibonacci :: (int) -> int
+
+let fibonacci = fn (x)
+    let i = box(1),
+        sum = box(0)
+    in loop
+        if *i > x then
+            break *sum
+        end
+
+        sum := *sum + *i
+        i := *i + 1
+    end
+
+let decl main :: (int, array<string>) -> ()
+
+let main = fn (argc, argv)
+    print("Fibonacci of 10 is: ", int_to_string(fibonacci(10)))

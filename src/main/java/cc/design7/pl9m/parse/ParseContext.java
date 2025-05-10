@@ -7,6 +7,10 @@ import org.jetbrains.annotations.Nullable;
 import java.util.HashMap;
 
 public record ParseContext(int index, byte[] bytes, SourceLocation location) {
+    public ParseContext(byte[] bytes, String fileName) {
+        this(0, bytes, new SourceLocation(fileName, 1, 1));
+    }
+
     public Pair<Token, ParseContext> nextToken() throws ParseException {
         return nextTokenImpl(
                 bytes,

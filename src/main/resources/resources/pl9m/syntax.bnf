@@ -47,7 +47,7 @@ argument-expr-list ::= argument-expr-list ',' expr | expr
 unary-expr ::= postfix-expr
              | unary-op unary-expr
 
-unary-op ::= '+' | '-' | '~' | '!'
+unary-op ::= '+' | '-' | '~' | '!' | '*'
 
 multiplicative-expr ::= unary-expr | multiplicative-expr multiplicative-op unary-expr
 

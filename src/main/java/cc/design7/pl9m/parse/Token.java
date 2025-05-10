@@ -1,14 +1,15 @@
 package cc.design7.pl9m.parse;
 
 import cc.design7.pl9m.syntax.SourceLocation;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public record Token(Kind kind, SourceLocation location, @Nullable Object value) {
     public enum Kind {
-        IDENT("$ident"),
-        LIT_INT("$lit_int"),
-        LIT_FLOAT("$lit_float"),
-        LIT_STRING("$lit_string"),
+        IDENT("ident"),
+        LIT_INT("lit_int"),
+        LIT_FLOAT("lit_float"),
+        LIT_STRING("lit_string"),
 
         KW_TRUE("true"),
         KW_FALSE("false"),
@@ -86,5 +87,14 @@ public record Token(Kind kind, SourceLocation location, @Nullable Object value) 
 
     public Token(Kind kind, SourceLocation location) {
         this(kind, location, null);
+    }
+
+    @Override
+    public @NotNull String toString() {
+        if (value != null) {
+            return "<" + kind.value + ", " + value + ">";
+        } else {
+            return "<" + kind.value + ">";
+        }
     }
 }
