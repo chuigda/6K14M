@@ -75,4 +75,6 @@ public final class Unify {
             }
         }
     }
+
+    private Unify() {}
 }

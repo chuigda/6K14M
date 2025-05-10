@@ -202,4 +202,6 @@ public final class AlgorithmJ {
 
         return new TypeScheme(filteredTypeVars, t);
     }
+
+    private AlgorithmJ() {}
 }
