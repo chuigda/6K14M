@@ -6,7 +6,8 @@ let native print = 'cc.design7.pl9m.Runtime#print(java.lang.String)'
 let native println = 'cc.design7.pl9m.Runtime#println(java.lang.String)'
 let native to_string = 'java.util.Objects#toString(java.lang.Object)java.lang.String'
 
-let decl sum :: (int, int) -> int
+# type signature can be automatically inferred
+# sum :: (int, int) -> int
 
 let sum = fn (first, last)
     let i   = ref(first),
@@ -20,6 +21,7 @@ let sum = fn (first, last)
         i := *i + 1
     end
 
+# For types that cannot be automatically inferred, you can use the `let decl` syntax
 let decl main :: (list<string>) -> ()
 
 let main = fn (args) begin
