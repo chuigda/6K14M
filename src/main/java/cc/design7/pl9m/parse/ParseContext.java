@@ -106,60 +106,6 @@ public record ParseContext(int index, byte[] bytes, SourceLocation location) {
         }
     }
 
-    private static int[] skipWhitespace(byte[] bytes, int index, int line, int col) {
-        while (true) {
-            if (index >= bytes.length) {
-                break;
-            }
-
-            byte b = bytes[index];
-            if (b == ' ' || b == '\t') {
-                index++;
-                col++;
-            } else if (b == '\n') {
-                index++;
-                line++;
-                col = 1;
-            } else if (b == '\r') {
-                index++;
-                if (index < bytes.length && bytes[index] == '\n') {
-                    index++;
-                }
-                line++;
-                col = 1;
-            }
-            else if (b == '#') {
-                index++;
-                col++;
-                while (index < bytes.length) {
-                    byte commentChar = bytes[index];
-                    if (commentChar == '\n' || commentChar == '\r') {
-                        break;
-                    }
-                    index++;
-                    col++;
-                }
-            }
-            else {
-                break;
-            }
-        }
-
-        return new int[]{index, line, col};
-    }
-
-    private static boolean isIdentStart(byte b) {
-        return (b >= 'a' && b <= 'z') || (b >= 'A' && b <= 'Z') || b == '_';
-    }
-
-    private static boolean isIdentChar(byte b) {
-        return isIdentStart(b) || (b >= '0' && b <= '9') || b == '?' || b == '!' || b == '-' || b == '$';
-    }
-
-    private static boolean isNumericStart(byte b) {
-        return b >= '0' && b <= '9';
-    }
-
     private static Pair<Token, ParseContext> scanNumber(
             byte[] bytes,
             int index,
@@ -360,6 +306,60 @@ public record ParseContext(int index, byte[] bytes, SourceLocation location) {
         } else {
             throw new ParseException(location, "Unexpected character: " + (char)b1);
         }
+    }
+
+    private static int[] skipWhitespace(byte[] bytes, int index, int line, int col) {
+        while (true) {
+            if (index >= bytes.length) {
+                break;
+            }
+
+            byte b = bytes[index];
+            if (b == ' ' || b == '\t') {
+                index++;
+                col++;
+            } else if (b == '\n') {
+                index++;
+                line++;
+                col = 1;
+            } else if (b == '\r') {
+                index++;
+                if (index < bytes.length && bytes[index] == '\n') {
+                    index++;
+                }
+                line++;
+                col = 1;
+            }
+            else if (b == '#') {
+                index++;
+                col++;
+                while (index < bytes.length) {
+                    byte commentChar = bytes[index];
+                    if (commentChar == '\n' || commentChar == '\r') {
+                        break;
+                    }
+                    index++;
+                    col++;
+                }
+            }
+            else {
+                break;
+            }
+        }
+
+        return new int[]{index, line, col};
+    }
+
+    private static boolean isIdentStart(byte b) {
+        return (b >= 'a' && b <= 'z') || (b >= 'A' && b <= 'Z') || b == '_';
+    }
+
+    private static boolean isIdentChar(byte b) {
+        return isIdentStart(b) || (b >= '0' && b <= '9') || b == '?' || b == '!' || b == '-' || b == '$';
+    }
+
+    private static boolean isNumericStart(byte b) {
+        return b >= '0' && b <= '9';
     }
 
     private static final HashMap<String, Token.Kind> KEYWORD_MAP = new HashMap<>();
