@@ -88,7 +88,7 @@ public record ParseContext(int index, byte[] bytes, SourceLocation location) {
             b = bytes[index];
         }
 
-        SourceLocation endLoaction = new SourceLocation(file, line, col);
+        SourceLocation endLocation = new SourceLocation(file, line, col);
 
         String ident = new String(bytes, start, index - start);
         Token.Kind kind = KEYWORD_MAP.get(ident);
@@ -96,12 +96,12 @@ public record ParseContext(int index, byte[] bytes, SourceLocation location) {
             kind = Token.Kind.IDENT;
             return new Pair<>(
                     new Token(kind, location, ident),
-                    new ParseContext(index, bytes, endLoaction)
+                    new ParseContext(index, bytes, endLocation)
             );
         } else {
             return new Pair<>(
                     new Token(kind, location),
-                    new ParseContext(index, bytes, endLoaction)
+                    new ParseContext(index, bytes, endLocation)
             );
         }
     }
