@@ -7,6 +7,7 @@ public final class TyckException extends Exception{
     public final ArrayList<String> chain;
 
     public TyckException(String message) {
+        super(message);
         this.message = message;
         this.chain = new ArrayList<>();
     }
@@ -14,14 +15,10 @@ public final class TyckException extends Exception{
     @Override
     public String getMessage() {
         StringBuilder sb = new StringBuilder();
-        for (int i = chain.size() - 1; i >= 0; i--) {
-            sb.append(chain.get(i));
-            if (i != 0) {
-                sb.append("\n");
-            }
-        }
         sb.append(message);
-
+        for (String s : chain) {
+            sb.append("\n").append(s);
+        }
         return sb.toString();
     }
 }

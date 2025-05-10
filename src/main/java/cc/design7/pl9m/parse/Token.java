@@ -76,9 +76,15 @@ public record Token(Kind kind, SourceLocation location, @Nullable Object value) 
         SYM_CARET("^"),
         SYM_DAMP("&&"),
         SYM_DPIPE("||"),
-        SYM_COLONEQ(":=");
+        SYM_COLONEQ(":="),
+
+        EOI("$end_of_input$");
 
         public final String value;
         Kind(String value) { this.value = value; }
+    }
+
+    public Token(Kind kind, SourceLocation location) {
+        this(kind, location, null);
     }
 }
