@@ -215,7 +215,41 @@ public record ParseContext(int index, byte[] bytes, SourceLocation location) {
             int line,
             int col
     ) throws ParseException {
-        throw new UnsupportedOperationException("not implemented");
+        SourceLocation location = new SourceLocation(file, line, col);
+        byte quoteChar = bytes[index];
+        index++;
+        int currentCol = col + 1;
+        int contentStartIndex = index;
+
+        while (index < bytes.length) {
+            byte b = bytes[index];
+            if (b == '\\') {
+                if (index + 1 >= bytes.length) {
+                    throw new ParseException(location, "Unterminated string literal (escape sequence at end of file)");
+                }
+
+                switch (bytes[index + 1]) {
+                    case 'n', 'r', 't', '\\', '\'', '"' -> {
+                        index += 2;
+                        currentCol += 2;
+                    }
+                    default -> throw new ParseException(location, "Invalid escape sequence: \\" + (char) bytes[index + 1]);
+                }
+            } else if (b == quoteChar) {
+                String value = new String(bytes, contentStartIndex, index - contentStartIndex);
+                index++;
+                currentCol++;
+                SourceLocation endLocation = new SourceLocation(file, line, currentCol);
+                ParseContext newContext = new ParseContext(index, bytes, endLocation);
+                return new Pair<>(new Token(Token.Kind.LIT_STRING, location, value), newContext);
+            } else if (b == '\n' || b == '\r') {
+                SourceLocation errLoc = new SourceLocation(file, line, currentCol);
+                throw new ParseException(errLoc, "Unterminated string literal (newline in string)");
+            }
+            index++;
+            currentCol++;
+        }
+        throw new ParseException(location, "Unterminated string literal");
     }
 
     private static Pair<Token, ParseContext> scanSymbol(
