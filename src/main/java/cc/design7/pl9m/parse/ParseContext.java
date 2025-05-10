@@ -61,6 +61,8 @@ public record ParseContext(int index, byte[] bytes, SourceLocation location) {
             return scanIdentOrKeyword(bytes, index, file, line, col);
         } else if (isNumericStart(b)) {
             return scanNumber(bytes, index, file, line, col);
+        } else if (b == '"' || b == '\'') {
+            return scanString(bytes, index, file, line, col);
         } else {
             return scanSymbol(bytes, index, file, line, col);
         }
