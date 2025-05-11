@@ -15,9 +15,9 @@ let sum = fn (first, last)
     in loop
         if *i > last then
             break *acc
-        end
+        end;
 
-        acc := *acc + *i
+        acc := *acc + *i;
         i := *i + 1
     end
 

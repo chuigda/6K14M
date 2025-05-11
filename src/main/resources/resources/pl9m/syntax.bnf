@@ -109,7 +109,7 @@ case-clause-list ::= case-clause-list case-clause | case-clause
 case-clause ::= 'case' /*ctor*/identifier /*var*/identifier? ('as' identifier-list)? '->' expr
               | 'default' '->' expr
 
-loop-expr ::= 'loop' expr 'end'
+loop-expr ::= 'loop' semicolon-sep-expr-list 'end'
 
 abs-expr ::= 'fn' '(' identifier-list? ')' expr
 
