@@ -1,0 +1,140 @@
+program ::= global-decl-list?
+
+global-decl-list ::= global-decl-list global-decl | global-decl
+
+global-decl ::= let-decl | type-decl
+
+let-decl ::= 'let' (let-normal-decl | let-native-decl | let-signature-decl)
+
+let-normal-decl ::= 'rec'? let-assign-list
+
+let-native-decl ::= 'native' identifier '=' string
+
+let-signature-decl ::= 'decl' identifier '::' '(' type-list? ')' '->' type
+
+type-decl ::= 'type' (adt-decl | native-type-decl)
+
+adt-decl ::= identifier ('<' type-var-list '>')? '=' type-ctor-list
+
+type-ctor-list ::= type-ctor-list '|' type-ctor | type-ctor
+
+type-ctor ::= identifier type-list?
+
+type-list ::= type-list ',' type | type
+
+type ::= 'int' | 'float' | 'bool' | 'string'
+       | identifier ('<' type-list '>')?
+       | '(' type-list? ')'
+       | 'fn' '(' type-list? ')' '->' type
+
+type-var-list ::= type-var-list ',' identifier | identifier
+
+native-type-decl ::= 'native' identifier ('<' type-var-list '>')? '=' /*type*/string /*ctor*/string
+
+let-assign-list ::= let-assign-list ',' let-assign | let-assign
+
+let-assign ::= identifier '=' expr
+
+primary-expr ::= identifier | constant | string | '(' expr ')'
+
+postfix-expr ::= primary-expr
+               | postfix-expr '.' (identifier | int)
+               | postfix-expr '[' expr ']'
+               | postfix-expr '(' argument-expr-list? ')'
+
+argument-expr-list ::= argument-expr-list ',' expr | expr
+
+unary-expr ::= postfix-expr
+             | unary-op unary-expr
+
+unary-op ::= '+' | '-' | '~' | '!' | '*'
+
+multiplicative-expr ::= unary-expr | multiplicative-expr multiplicative-op unary-expr
+
+multiplicative-op ::= '*' | '/' | '%' | 'f*' | 'f/' | 'f%'
+
+additive-expr ::= multiplicative-expr
+                | additive-expr additive-op multiplicative-expr
+
+additive-op ::= '+' | '-' | 'f+' | 'f-'
+
+shift-expr ::= additive-expr
+             | shift-expr shift-op additive-expr
+
+shift-op ::= '<<' | '>>' | '>>>'
+
+relational-expr ::= shift-expr
+                  | relational-expr relational-op shift-expr
+
+relational-op ::= '<' | '>' | '<=' | '>=' | 'f<' | 'f>' | 'f<=' | 'f>='
+
+equality-expr ::= relational-expr
+                | equality-expr equality-op relational-expr
+
+equality-op ::= '==' | '!='
+
+bitwise-and-expr ::= equality-expr
+                  | bitwise-and-expr '&' equality-expr
+
+bitwise-xor-expr ::= bitwise-and-expr
+                  | bitwise-xor-expr '^' bitwise-and-expr
+
+bitwise-or-expr ::= bitwise-xor-expr
+                 | bitwise-or-expr '|' bitwise-xor-expr
+
+logical-and-expr ::= bitwise-or-expr
+                   | logical-and-expr '&&' bitwise-or-expr
+
+logical-or-expr ::= logical-and-expr
+                  | logical-or-expr '||' logical-and-expr
+
+let-expr ::= 'let' 'rec'? let-assign-list 'in' expr
+
+stmt-list ::= 'begin' semicolon-sep-expr-list? 'end'
+
+semicolon-sep-expr-list ::= semicolon-sep-expr-list ';' expr | expr
+
+return-expr ::= 'return' expr?
+
+throw-expr ::= 'throw' expr
+
+break-expr ::= 'break' expr?
+
+continue-expr ::= 'continue'
+
+if-expr ::= 'if' expr 'then' expr ('else' expr)?
+
+match-expr ::= 'match' /*adt type*/identifier expr case-clause-list 'end'
+
+case-clause-list ::= case-clause-list case-clause | case-clause
+
+case-clause ::= 'case' /*ctor*/identifier /*varbind*/identifier? ('as' identifier-list)? '->' expr
+              | 'default' '->' expr
+
+loop-expr ::= 'loop' semicolon-sep-expr-list 'end'
+
+try-catch-expr ::= 'try' semicolon-sep-expr-list catch-clause-list? 'end'
+
+catch-clause-list ::= catch-clause-list catch-clause | catch-clause
+
+catch-clause ::= 'catch' /*typename*/identifier /*varbind*/identifier semicolon-sep-expr-list
+
+abs-expr ::= 'fn' '(' identifier-list? ')' expr
+
+assign-expr ::= identifier ':=' expr
+
+identifier-list ::= identifier-list ',' identifier | identifier
+
+expr ::= let-expr
+       | abs-expr
+       | stmt-list
+       | return-expr
+       | throw-expr
+       | break-expr
+       | continue-expr
+       | if-expr
+       | match-expr
+       | loop-expr
+       | try-catch-expr
+       | logical-or-expr
+       | assign-expr
