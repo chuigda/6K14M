@@ -1,5 +1,7 @@
 # PL9 - Programming Langauge 9
 
+> Read some type theory at [9T56](https://github.com/chuigda/9T56).
+
 ## Features
 - ML-alike syntax, with many tweaks (removing curry, more "modern" function call syntax, for example)
 - HM type system, with type inference and type checking.
